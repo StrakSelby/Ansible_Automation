@@ -1,0 +1,80 @@
+- name: Ensure /var/www directory exists
+  ansible.builtin.file:
+    path: "{{ file_directory }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: true
+
+- name: Download WordPress
+  ansible.builtin.get_url: 
+    url: "http://wordpress.org/wordpress-{{ wp_version }}.tar.gz"
+    dest: "{{ wordpress_file }}-{{ wp_version }}.tar.gz"
+  become: true
+
+- name: Check if WordPress archive exists
+  ansible.builtin.stat:
+    path: "{{ wordpress_file }}-{{ wp_version }}.tar.gz"
+  register: wp_archive
+
+- name: Verify checksum
+  command: sha256sum {{ wordpress_file }}-{{ wp_version }}.tar.gz
+  register: sha256_result
+  changed_when: false    #the task should not be marked as changed, because the verify checksum is read-only operation
+  when: wp_archive.stat.exists
+
+- name: Fail if checksum does not match
+  ansible.builtin.fail:
+    msg: "Checksum does not match! Expected {{ wp_sha256sum }} but got {{ sha256_result.stdout.split()[0] }}"
+  when: wp_archive.stat.exists and 
+        sha256_result is defined and 
+        sha256_result.rc == 0 and 
+        sha256_result.stdout.split()[0] != wp_sha256sum
+
+- name: Check if WordPress directory exists
+  ansible.builtin.stat: #use to get information of the file
+    path: "{{ wordpress_file }}"
+  register: wp_dir_exists
+  
+
+- name: Create WordPress directory if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ wordpress_file }}"
+    state: directory
+  when: not wp_dir_exists.stat.exists
+  become: true
+
+- name: Extract WordPress archive
+  ansible.builtin.command: >
+    tar -xzvf "{{ wordpress_file }}"-{{ wp_version }}.tar.gz -C /var/www/wordpress --strip-components=1
+  # when: wp_archive.stat.exists
+  changed_when: false
+  become: true
+
+- name: Change the permission of the WordPress directory Recursive
+  ansible.builtin.file: 
+    path: "{{ wordpress_file }}"
+    owner: '{{ user }}'
+    group: '{{ user }}'
+    mode: '0775'
+    recurse: yes
+    state: directory
+    setype: httpd_sys_content_t
+  changed_when: false
+  become: true
+  tags: ch
+
+- name: Copy WordPress config file
+  ansible.builtin.template:
+    src:   wp-config.php
+    dest: "{{ wp_config_file }}"
+  become: true
+
+- name: Start php-fpm Service
+  ansible.builtin.service: 
+    name: php8.1-fpm.service 
+    state: started 
+    enabled: yes
+  become: true
+  tags: php8.1

@@ -1,0 +1,17 @@
+- name: Install apache2
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+  become: true
+  
+- name: Copy apache2 virtualhost file
+  ansible.builtin.template:
+    src: 000-default.conf.j2
+    dest: "{{ apache2_virtualhost }}"
+  become: true
+
+- name: Copy apache2 port config file
+  ansible.builtin.template:
+    src: ports.conf.j2
+    dest: "{{ apache2_ports }}"
+  become: true

@@ -1,0 +1,42 @@
+- name: Delete droplet 
+  hosts: droplet
+  connection: local
+  gather_facts: false
+  
+  #set the droplet names here 
+  vars:
+    droplet_names:
+      - webserver
+      - databaseserver
+
+  tasks:
+    - name: Get list of Droplets
+      community.digitalocean.digital_ocean_droplet_info:
+        api_token: "{{ api_token }}"
+      register: droplets_info
+    
+    # - name: Debug droplets_info variable
+    #   ansible.builtin.debug:
+    #     msg: "{{ droplets_info }}"
+    
+    - name: get webserver droplet ID
+      ansible.builtin.set_fact:
+        droplets_ids: >-
+          {{
+            droplets_info.data |
+            selectattr('name', 'in', droplet_names) |
+            map(attribute='id') |
+            list
+          }}
+
+    - name: Print the webserver Droplet ID
+      ansible.builtin.debug:
+        msg: "Droplet ID: {{ droplets_ids }}"
+    
+    - name: Delete the droplets
+      community.digitalocean.digital_ocean_droplet:
+        state: absent
+        id: "{{ item }}"
+        api_token: "{{ api_token }}"
+      loop: "{{ droplets_ids }}"
+

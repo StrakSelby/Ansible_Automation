@@ -1,0 +1,17 @@
+mysql_port: 3306
+mysql_root: root
+root_pass: wElcome.01K
+
+wp_db_name: wordpress
+wp_db_user: wordpress
+wp_db_password: wordpress
+
+install_mariadb_repos: true
+install_mariadb_version_ubun20: "10.4"
+install_mariadb_version_ubun22: "10.6"
+install_mariadb_ubun20: "https://ftp.agdsn.de/pub/mirrors/mariadb/repo/{{ install_mariadb_version_ubun20}}/"
+install_mariadb_ubun22: "http://downloads.mariadb.com/MariaDB/mariadb-{{ install_mariadb_version_ubun22}}/repo/"
+
+mysql_enabled_on_startup: true
+mariadb_socket: /var/run/mysqld/mysqld.sock
+python_package: python3-pymysql

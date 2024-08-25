@@ -1,0 +1,30 @@
+- name: install net-tools on the database
+  ansible.builtin.apt:
+    name: net-tools
+    state: present
+  become: true
+
+- name: Check mariadb Service status
+  ansible.builtin.systemd:
+    name: mariadb
+    state: started
+  register: mariadb_status
+  failed_when: mariadb_status.status['ActiveState'] != 'active'
+  become: true
+
+- name: MariaDB Service status
+  ansible.builtin.debug:
+    msg: "MariDB Service is running"
+  when: mariadb_status.status['ActiveState'] == 'active'
+
+- name: Check if MariaDB listening on port 3306
+  ansible.builtin.command: >
+    netstat -an | grep 3306
+  register: mariadb_port
+  failed_when: mariadb_port.stdout == ""
+  changed_when: false
+
+- name: MariaDB listening port
+  ansible.builtin.debug:
+    msg: "MariDB is listening on port 3306"
+  when: mariadb_port.stdout

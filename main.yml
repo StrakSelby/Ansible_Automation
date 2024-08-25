@@ -1,0 +1,10 @@
+- name: Running the playbook
+  hosts: servers
+  roles:
+    - role: database
+      tags: setup_database
+    - role: webserver
+      tags: setup_webserver 
+
+#ansible-playbook playbook.yml --tags setup_database --limit database
+#ansible-playbook playbook.yml --tags setup_webserver --limit webserver

@@ -1,0 +1,45 @@
+- name: Creating user with sudo
+  hosts: root_servers
+  gather_facts: true
+  vars:
+    user: admin
+    user_pass: $2a$04$Eeud0vtThFort//BA9kQHuH7LUd8nH/Mw.7/Y9jN.WdB6PTBrRdxO
+    ssh_pub_key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+  tasks:
+    - name: Creating webserver user with sudo 
+      ansible.builtin.user:
+        name: "{{ user }}"
+        shell: /bin/bash
+        create_home: yes
+        state: present
+        password: "{{ user_pass }}"
+        groups: sudo,www-data,root
+        append: yes
+      tags: servers_user_creation
+    
+    - name: Create .ssh directory for admin
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.ssh"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0700"
+    
+    - name: Copy the public key from the root directory to admin user home directory
+      ansible.builtin.copy:
+        dest: "/home/{{ user }}/.ssh/authorized_keys"
+        content: "{{ ssh_pub_key }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0600'
+    
+    # - name: Ensure sudo group has no password prompt
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/sudoers
+    #     state: present
+    #     regexp: '^%sudo'
+    #     line: '%sudo   ALL=(ALL:ALL) NOPASSWD:ALL'
+    #     validate: 'visudo -cf %s'
+    #   tags: sudo_nopasswd
+
+    

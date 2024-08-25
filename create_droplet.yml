@@ -1,0 +1,48 @@
+- name: Creating Digital Ocean Web server
+  hosts: droplet
+  connection: local
+  gather_facts: false
+    
+  tasks:
+    - name: creating webserver droplet
+      community.digitalocean.digital_ocean_droplet:
+        oauth_token: "{{ api_token }}"
+        unique_name: yes
+        region: sgp1
+        image: ubuntu-22-04-x64
+        wait_timeout: 500
+        name: webserver
+        size_id: s-1vcpu-1gb
+        state: present
+        ssh_keys: ['0e:49:df:b4:e4:1a:f4:fb:05:83:5f:e1:cf:dd:ed:a9']
+      register: Webserver
+      tags: create_server_droplet
+    
+    - name: ID and IP address of the webserver droplet
+      ansible.builtin.debug:
+        msg: "ID is {{ Webserver.data.droplet.id }} , Public IP is {{ Webserver.data.droplet.networks.v4[0].ip_address }}, Private IP is {{ Webserver.data.droplet.networks.v4[1].ip_address }}"
+      register: Webserver_info
+      tags: create_server_droplet
+
+    - name: Creating database droplet
+      community.digitalocean.digital_ocean_droplet:
+        oauth_token: "{{ api_token }}"
+        unique_name: yes
+        region: sgp1
+        image: ubuntu-22-04-x64
+        wait_timeout: 500
+        name: databaseserver
+        size_id: s-1vcpu-1gb
+        state: present
+        ssh_keys: ['0e:49:df:b4:e4:1a:f4:fb:05:83:5f:e1:cf:dd:ed:a9']
+      register: Database
+      tags: create_database_droplet
+      
+    - name: ID and IP address of the webserver droplet
+      ansible.builtin.debug:
+        msg: "ID is {{ Database.data.droplet.id }} , Public IP is {{ Database.data.droplet.networks.v4[0].ip_address }}, Private IP is {{ Database.data.droplet.networks.v4[1].ip_address }}"
+      register: Database_info
+      tags: create_database_droplet
+
+
+

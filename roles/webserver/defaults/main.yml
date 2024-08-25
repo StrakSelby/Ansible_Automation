@@ -1,0 +1,21 @@
+#apache2 variable
+apache2_virtualhost: /etc/apache2/sites-available/000-default.conf
+apache2_ports: /etc/apache2/ports.conf
+
+#nginx variable 
+nginx_serverblocks: /etc/nginx/sites-available/default
+
+#php-fpm variable
+php_fpm_file: /etc/php/8.1/fpm/pool.d/www.conf
+
+#directory 
+file_directory: /var/www/
+ssl_file: /var/www/certificate
+source_directory: /home/DIGITAL_OCEAN_Ansible_Improved/roles/webserver/templates/certificate
+
+#wordpress variable
+wordpress_file: /var/www/wordpress
+wp_config_file: /var/www/wordpress/wp-config.php
+wp_version: 6.6.1
+wp_sha256sum: 616e818653f8f289312eba6c2703e0ca7487a5b751ab23285daabd20177c4e55
+wp_db_host: 10.104.0.3

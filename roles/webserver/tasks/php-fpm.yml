@@ -1,0 +1,20 @@
+- name: Install php-fpm and dependencies
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php
+    - php8.1-fpm
+    - php-enchant
+    - php-mbstring
+    - php-mysql
+    - php-xml
+    - php-simplexml
+    - php-mysqli
+  become: true
+  
+- name: Copy php-fpm configuration
+  ansible.builtin.template:
+    src: www.conf.j2
+    dest: "{{ php_fpm_file }}"
+  become: true

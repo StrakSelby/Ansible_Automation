@@ -1,0 +1,43 @@
+- name: Import db_client task
+  ansible.builtin.import_tasks: db_client.yml
+
+- name: Import php-fpm task
+  ansible.builtin.import_tasks: php-fpm.yml
+
+- name: Import wordpress task
+  ansible.builtin.import_tasks: wordpress.yml
+
+- name: Import ssl_cert task
+  ansible.builtin.import_tasks: ssl_certificate.yml
+
+- name: Import nginx task
+  ansible.builtin.import_tasks: nginx.yml
+
+- name: Import apache2 task
+  ansible.builtin.import_tasks: apache2.yml
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx 
+    state: restarted
+  become: true
+  tags: restart_nginx
+
+- name: Start apache2 
+  ansible.builtin.service:
+    name: apache2
+    state: started
+  become: true
+  
+- name: Restart apache2 
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+  become: true
+  tags: restart_apache2
+
+- name: Restart php-fpm
+  ansible.builtin.service:
+    name: php8.1-fpm.service
+    state: restarted
+  become: true

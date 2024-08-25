@@ -1,0 +1,43 @@
+- name: Allow remote root login
+  ansible.builtin.command: |
+    mysql -NBe "GRANT ALL PRIVILEGES ON *.* TO '{{ mysql_root }}'@'%' IDENTIFIED BY '{{ root_pass }}' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+  changed_when: false
+  become: true
+  tags: Allow
+
+# Note, you are not doing anything with this task
+- name: Get list of hosts for the root user
+  ansible.builtin.command: |
+    mysql -NBe "SELECT Host FROM mysql.user
+    WHERE User = '{{ mysql_root }}'
+    ORDER BY (Host='localhost') ASC"
+  changed_when: false
+  check_mode: false
+  become: true
+
+- name: Get list of hosts for the anonymous user
+  ansible.builtin.command: mysql -NBe 'SELECT Host FROM mysql.user WHERE User = ""'
+  register: mysql_anonymous_hosts
+  changed_when: false
+  check_mode: false
+  become: true
+
+- name: Remove anonymous MySQL users
+  community.mysql.mysql_user:
+    check_implicit_admin: yes
+    login_unix_socket: "{{ mariadb_socket }}"
+    name: ""
+    host: "{{ item }}"
+    state: absent
+  with_items: "{{ mysql_anonymous_hosts.stdout_lines|default([]) }}"
+  become: true
+
+- name: Remove MySQL test database
+  community.mysql.mysql_db:
+    check_implicit_admin: yes
+    login_unix_socket: "{{ mariadb_socket }}"
+    name: 'test'
+    state: absent
+  become: true
+  
+   

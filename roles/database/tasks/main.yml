@@ -1,0 +1,23 @@
+- name: Install mariadb 
+  ansible.builtin.import_tasks: install.yml
+
+- name: Check that MariaDB packages were installed
+  ansible.builtin.set_fact:
+    mysql_install_packages: "{{ (deb_mysql_install_packages is defined and deb_mysql_install_packages.changed) }}"
+  
+- name: Ensure MariaDB is started and enabled on boot
+  ansible.builtin.service:
+    name: mariadb
+    state: started
+    enabled: "{{ mysql_enabled_on_startup }}"
+  register: mysql_service_configuration
+  become: true
+
+- name: Setup mariadb secure_installtion
+  ansible.builtin.import_tasks: secure-installation.yml
+
+- name: Database health-check
+  ansible.builtin.import_tasks: db_healthcheck.yml
+
+- name: Create database and database user
+  ansible.builtin.import_tasks: create_database_user.yml
