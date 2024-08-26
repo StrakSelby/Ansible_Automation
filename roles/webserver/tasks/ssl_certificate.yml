@@ -8,8 +8,8 @@
   ansible.builtin.copy:
     src:  "{{ source_directory }}"
     dest: "{{ file_directory }}"
-    owner: admin
-    group: admin
+    owner: "{{ user }}"
+    group: "{{ user }}"
     mode: "0600"
   when: not cert_state.stat.exists
   become: true

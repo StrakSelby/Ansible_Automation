@@ -43,14 +43,14 @@
     path: "{{ wordpress_file }}"
     state: directory
   when: not wp_dir_exists.stat.exists
-  become: true
+  #become: true
 
 - name: Extract WordPress archive
   ansible.builtin.command: >
     tar -xzvf "{{ wordpress_file }}"-{{ wp_version }}.tar.gz -C /var/www/wordpress --strip-components=1
   # when: wp_archive.stat.exists
   changed_when: false
-  become: true
+  #become: true
 
 - name: Change the permission of the WordPress directory Recursive
   ansible.builtin.file: 
@@ -69,7 +69,7 @@
   ansible.builtin.template:
     src:   wp-config.php
     dest: "{{ wp_config_file }}"
-  become: true
+  #become: true
 
 - name: Start php-fpm Service
   ansible.builtin.service: 

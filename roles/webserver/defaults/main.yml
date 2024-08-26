@@ -8,7 +8,7 @@ nginx_serverblocks: /etc/nginx/sites-available/default
 #php-fpm variable
 php_fpm_file: /etc/php/8.1/fpm/pool.d/www.conf
 
-#directory 
+#ssl certificate variable 
 file_directory: /var/www/
 ssl_file: /var/www/certificate
 source_directory: /home/vannaboth/Documents/DIGITAL_OCEAN_Ansible_Improved/roles/webserver/templates/certificate

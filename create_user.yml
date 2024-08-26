@@ -13,7 +13,7 @@
         create_home: yes
         state: present
         password: "{{ user_pass }}"
-        groups: sudo,www-data,root
+        groups: sudo,www-data
         append: yes
       tags: servers_user_creation
     
