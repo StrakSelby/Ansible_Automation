@@ -14,7 +14,7 @@
         name: webserver
         size_id: s-1vcpu-1gb
         state: present
-        ssh_keys: ['0e:49:df:b4:e4:1a:f4:fb:05:83:5f:e1:cf:dd:ed:a9']
+        ssh_keys: ['0b:0f:3e:97:c2:49:25:29:d6:33:05:39:d5:32:e7:7d']
       register: Webserver
       tags: create_server_droplet
     
@@ -34,7 +34,7 @@
         name: databaseserver
         size_id: s-1vcpu-1gb
         state: present
-        ssh_keys: ['0e:49:df:b4:e4:1a:f4:fb:05:83:5f:e1:cf:dd:ed:a9']
+        ssh_keys: ['0b:0f:3e:97:c2:49:25:29:d6:33:05:39:d5:32:e7:7d']
       register: Database
       tags: create_database_droplet
       

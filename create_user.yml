@@ -4,7 +4,7 @@
   vars:
     user: admin
     user_pass: $2a$04$Eeud0vtThFort//BA9kQHuH7LUd8nH/Mw.7/Y9jN.WdB6PTBrRdxO
-    ssh_pub_key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+    ssh_pub_key: "{{ lookup('file', '/home/vannaboth/.ssh/id_rsa.pub') }}"
   tasks:
     - name: Creating webserver user with sudo 
       ansible.builtin.user:
@@ -32,6 +32,18 @@
         owner: "{{ user }}"
         group: "{{ user }}"
         mode: '0600'
+    
+    - name: Disable root remote login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        state: present
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+    
+    - name: Restart ssh service
+      ansible.builtin.service:
+        name: sshd.service
+        state: restarted 
     
     # - name: Ensure sudo group has no password prompt
     #   ansible.builtin.lineinfile:
